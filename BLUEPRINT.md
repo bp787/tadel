@@ -1,4 +1,4 @@
-# Tadelverwaltung · Blueprint · v0.35
+# Tadelverwaltung · Blueprint · v0.36
 
 > **Regel für die KI (bitte zuerst lesen):**
 > 1. Diese Datei ist das Gedächtnis des Projekts.
@@ -184,9 +184,9 @@ Ich öffne die App und sehe sofort, nach Datum und Uhrzeit sortiert, wer in welc
 - [x] Tablet-Typ angeben → **iPad**
 - [x] Kostenloses GitHub-Konto anlegen
 - [ ] **Später erledigen:** Wieder bei GitHub anmelden (Passwort + unbenutzter Wiederherstellungscode), dann sofort Google Authenticator als zweiten Faktor einrichten (Settings → Password and authentication → Authenticator app → Edit, QR-Code scannen) und neue Wiederherstellungscodes holen
-- [ ] Benutzernamen der KI mitteilen
-- [ ] Repository `tadel` auf GitHub anlegen (öffentlich, leer)
-- [ ] GitHub Pages einschalten (nach dem ersten Hochladen, die KI erklärt es)
+- [x] Benutzernamen der KI mitteilen → **bp787**
+- [x] Repository `tadel` auf GitHub anlegen (öffentlich) → https://github.com/bp787/tadel (2026-11-25)
+- [x] GitHub Pages einschalten (Branch `main`, Ordner `/`) → **https://bp787.github.io/tadel/** (2026-11-25)
 - [x] ~~Nur bei Variante B: API-Schlüssel anlegen~~ → entfällt, weil Variante A gewählt ist
 - [ ] Ggf. mit der Schulleitung bzw. dem Datenschutzbeauftragten klären, ob die Speicherung so in Ordnung ist
 
@@ -214,7 +214,7 @@ Ich öffne die App und sehe sofort, nach Datum und Uhrzeit sortiert, wer in welc
 - Speicherplatz: Ein Foto belegt verkleinert ca. 200–400 KB, ein Schuljahr mit einigen hundert Blättern passt problemlos in den Browser-Speicher. Die Datensicherung (Phase 7) wird dadurch aber größer.
 - Idee: Weil ein Blatt nur ca. 6 Werte für die Hauptliste liefert, ist auch Eintippen in ca. 20 Sekunden möglich. Das Foto ist eine Komfortfunktion.
 - Umgesetzt: Ansichten „Aktuell“ (offene Termine), „Archiv“ (erledigte Termine) und „Blätter“ (gespeicherte Fotos) mit Zählern, Suche nach Name, Klasse oder Raum. Ein gesetzter Haken ist grün mit ✓; nicht abgehakte Felder sind immer rot; der heutige Tag ist blau.
-- Noch kein Git-Repository: Für Commits fehlen Git-Name und -E-Mail. Das wird zusammen mit dem GitHub-Zugang eingerichtet.
+- Git-Repository seit 2026-11-25: Commits als `bp787` mit der anonymen GitHub-Adresse `bp787@users.noreply.github.com` (nur in diesem Repository eingestellt). **Hochladen:** `git -c credential.gitHubAuthModes=device push` öffnet ein Windows-Fenster mit Code; den Code auf github.com/login/device eingeben und „Authorize“ (wird nach einigen Sekunden dunkelgrün). Der normale Browser-Weg blieb hängen. Nach dem Hochladen baut GitHub Pages die Seite in 1–2 Minuten neu. Der Ordner `zum-hochladen/` war nur eine Notlösung und wird nicht versioniert.
 
 ## Changelog
 
@@ -255,3 +255,4 @@ Ich öffne die App und sehe sofort, nach Datum und Uhrzeit sortiert, wer in welc
 | 0.33 | 2026-11-22 | Daten gingen im Artefakt nach dem Neuöffnen verloren: App speichert dort jetzt zusätzlich privat bei claude.ai (Fähigkeit `db`) und gleicht beim Öffnen ab, mit Statusanzeige unten; neue Datei `wolke.js`; am PC mit nachgebautem Speicher geprüft (Hochladen, Wiederherstellen nach gelöschtem Browser-Speicher, Löschen, Fehleranzeige); Artefakt Version 11 |
 | 0.34 | 2026-11-25 | Weitergabe an Kollegen: jede Person sieht über ihr eigenes Konto nur ihre eigenen Daten (war durch `data/users/<ID>` schon so, jetzt mit nachgebautem Speicher für zwei Konten geprüft); Hinweis bei Nur-Lesen-Zugang; Artefakt Version 12 |
 | 0.35 | 2026-11-25 | Teilen-Code für Klassen begonnen (nicht veröffentlicht, ein Fehler beim Live-Abgleich offen); Erkenntnis: Artefakt bietet keine Rolle „Mitwirkender“ und keine eigene App-Adresse, deshalb Umzug auf eigene Adresse mit eigenem Speicher geplant |
+| 0.36 | 2026-11-25 | App läuft unter eigener Adresse https://bp787.github.io/tadel/ (GitHub Pages, Repository bp787/tadel); dort liegen die Daten vorerst nur auf dem jeweiligen Gerät (kein Abgleich, kein Teilen), das Artefakt bleibt für den eigenen Abgleich iPhone/iPad; geprüft: Seite, Texterkennung und pdf.js werden ausgeliefert |

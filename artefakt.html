@@ -1,0 +1,423 @@
+<!-- Automatisch erzeugt aus index.html mit werkzeuge/artefakt-bauen.sh – nicht von Hand ändern -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Tadel">
+  <meta name="theme-color" content="#f6f7f9">
+  <title>Tadelverwaltung</title>
+  <meta name="claude:viewport-fit-sides" content="cover">
+  <link rel="stylesheet" href="styles.css">
+  <header class="topbar">
+    <h1 id="titel">Reflexionsstunden</h1>
+    <div class="kopf-knoepfe">
+      <button id="btn-klasse-neu" class="btn btn-primary" type="button" hidden>+ Klasse</button>
+      <button id="btn-foto" class="btn" type="button" aria-label="Blatt einlesen (Kamera, Fotos oder Datei)" title="Blatt einlesen (Kamera, Fotos oder Datei)">📷 <span class="knopf-text">Einlesen</span></button>
+      <button id="btn-neu" class="btn btn-primary" type="button">+ Termin</button>
+    </div>
+    <input id="foto-kamera" class="foto-eingabe" type="file" accept="image/*" capture="environment" hidden>
+    <input id="foto-mediathek" class="foto-eingabe" type="file" accept="image/*" hidden>
+    <input id="foto-datei" class="foto-eingabe" type="file" accept="image/*,.heic,.heif,application/pdf,.pdf" hidden>
+  </header>
+
+  <div id="foto-laden" class="foto-laden" hidden>
+    <div class="foto-laden-box" role="status" aria-live="polite">
+      <p id="foto-status">Blatt wird gelesen …</p>
+      <progress id="foto-fortschritt" max="1" value="0"></progress>
+      <p class="hinweis">Das Foto wird nur auf diesem Gerät ausgewertet und nicht gespeichert.</p>
+      <button type="button" id="foto-abbrechen" class="btn">Abbrechen</button>
+    </div>
+  </div>
+
+  <nav class="reiter" aria-label="Bereiche">
+    <button type="button" class="reiter-knopf" data-reiter="tadel" aria-pressed="true"><span class="reiter-icon">⚠️ </span>Tadel</button>
+    <button type="button" class="reiter-knopf" data-reiter="klassenbuch" aria-pressed="false"><span class="reiter-icon">📒 </span>Klassenbuch</button>
+    <button type="button" class="reiter-knopf" data-reiter="listen" aria-pressed="false"><span class="reiter-icon">☑️ </span>Listen</button>
+  </nav>
+
+  <main>
+    <div id="sicherung-hinweis" class="sicherung-hinweis" hidden></div>
+    <div id="erinnerungen" class="erinnerungen" hidden></div>
+    <div id="bereich-klassenbuch" class="bereich" hidden></div>
+    <div id="bereich-listen" class="bereich" hidden></div>
+    <div id="bereich-tadel" class="bereich">
+    <section class="werkzeuge" aria-label="Filter">
+      <div class="chips" role="group" aria-label="Anzeigen">
+        <button type="button" class="chip" data-ansicht="aktuell">Aktuell <span class="zahl"></span></button>
+        <button type="button" class="chip" data-ansicht="archiv">Archiv <span class="zahl"></span></button>
+        <button type="button" class="chip" data-ansicht="blaetter">Blätter <span class="zahl"></span></button>
+      </div>
+      <input id="suche" class="suche" type="search" placeholder="Name oder Klasse suchen" autocomplete="off">
+    </section>
+
+    <p id="zusammenfassung" class="zusammenfassung"></p>
+
+    <div id="liste"></div>
+    </div>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+  <footer class="fuss">
+    <span id="fuss-text">Alle Daten liegen nur auf diesem Gerät.</span>
+    <span id="wolke-status" class="wolke-status" hidden></span>
+    <button type="button" id="btn-sicherung" class="link-knopf">💾 Datensicherung</button>
+  </footer>
+
+  <dialog id="dlg-sicherung" class="sicherung-dlg" aria-labelledby="si-titel">
+    <h2 id="si-titel">Datensicherung</h2>
+    <p id="si-stand" class="si-stand"></p>
+
+    <section class="si-abschnitt">
+      <h3>Sichern</h3>
+      <p class="hinweis">Speichert alle Termine, Haken, Einträge und geschwärzten Blätter in <strong>eine Datei</strong>. Die Datei heißt immer <strong>tadel-sicherung.json</strong>: Speicherst du sie am selben Ort, ersetzt sie die vorige Sicherung.</p>
+      <button type="button" id="si-export" class="btn btn-primary">💾 Sicherung erstellen</button>
+      <div id="si-fertig" class="si-fertig" hidden>
+        <p id="si-fertig-text"></p>
+        <div class="si-knoepfe">
+          <button type="button" id="si-teilen" class="btn btn-primary" hidden>📤 Sichern / Teilen</button>
+          <button type="button" id="si-laden" class="btn">⬇ Herunterladen</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="si-abschnitt">
+      <h3>Wiederherstellen oder übertragen</h3>
+      <p class="hinweis">Öffnet eine Sicherungsdatei, z. B. nach einem Gerätewechsel oder um die Daten vom iPhone aufs iPad zu bringen.</p>
+      <button type="button" id="si-import" class="btn">📂 Sicherung öffnen</button>
+      <input type="file" id="si-datei" accept="application/json,.json" hidden>
+      <div id="si-vorschau" class="si-vorschau" hidden>
+        <p id="si-vorschau-text"></p>
+        <div class="si-knoepfe">
+          <button type="button" id="si-zusammen" class="btn btn-primary">Zusammenführen</button>
+          <button type="button" id="si-ersetzen" class="btn btn-gefahr">Alles ersetzen</button>
+        </div>
+        <p class="hinweis">„Zusammenführen“ behält alles auf diesem Gerät und ergänzt bzw. aktualisiert es aus der Datei. „Alles ersetzen“ löscht zuerst alle Daten auf diesem Gerät.</p>
+      </div>
+    </section>
+
+    <p class="hinweis si-datenschutz">Datenschutz: Die Datei enthält Vornamen mit Initiale, Klassen, Termine und die geschwärzten Blätter. Bewahre sie sicher auf (nicht in öffentlichen Ordnern oder Chats).</p>
+    <div class="aktionen"><span class="platz"></span><button type="button" id="si-zu" class="btn">Schließen</button></div>
+  </dialog>
+
+  <dialog id="dlg" aria-labelledby="dlg-titel">
+    <form id="form" method="dialog" novalidate>
+      <h2 id="dlg-titel">Neuer Termin</h2>
+      <p id="foto-hinweis" class="foto-hinweis" hidden></p>
+      <div id="dlg-knoepfe" class="dlg-knoepfe" hidden>
+        <button type="button" id="btn-blatt" class="btn btn-klein" hidden>📄 Blatt ansehen</button>
+        <button type="button" id="btn-rueck-ansehen" class="btn btn-klein" hidden>📎 Rückantwort ansehen</button>
+        <button type="button" id="btn-rueck-neu" class="btn btn-klein" hidden>📎 Rückantwort einlesen</button>
+      </div>
+
+      <div class="felder">
+        <label>Datum
+          <input name="datum" type="date" required>
+        </label>
+        <div class="zeile">
+          <label>Von
+            <input name="von" type="time" required>
+          </label>
+          <label>Bis
+            <input name="bis" type="time">
+          </label>
+        </div>
+        <label>Raum
+          <input name="raum" type="text" list="raeume" required autocomplete="off" placeholder="z. B. R0.54">
+        </label>
+        <div class="schueler-block">
+          <div class="schueler-kopf"><span>Name</span><span>Klasse</span><span></span></div>
+          <div id="schueler-zeilen" class="schueler-zeilen"></div>
+          <button type="button" id="btn-zeile" class="btn btn-klein">+ weiterer Schüler</button>
+          <small class="hinweis">Gespeichert wird nur Vorname + Initiale des Nachnamens.</small>
+        </div>
+      </div>
+
+      <p id="eintraege-mehrere" class="hinweis" hidden>Einträge und Halbjahreszahlen vom Blatt kannst du bei mehreren Schülern danach pro Schüler über ✎ ergänzen.</p>
+      <details id="eintraege-box" class="eintraege-box">
+        <summary>Einträge und Halbjahr laut Blatt <span class="optional">(Tabelle auf dem Tadel-Blatt)</span></summary>
+        <div class="felder">
+          <label>Datum des Tadels (oben rechts auf dem Blatt)
+            <input name="tadelDatum" type="date">
+          </label>
+        </div>
+        <div id="eintraege-raster" class="eintraege-raster">
+          <span></span><span class="kopf">Woche</span><span class="kopf">Halbjahr</span>
+        </div>
+        <p class="hinweis">„Woche“ = Tabelle „vergangene Schulwoche“, „Halbjahr“ = Zeile „In diesem Halbjahr“.</p>
+      </details>
+
+      <p id="fehler" class="fehler" role="alert"></p>
+
+      <div class="aktionen">
+        <button type="button" id="btn-loeschen" class="btn btn-gefahr">Löschen</button>
+        <span class="platz"></span>
+        <button type="button" id="btn-abbrechen" class="btn">Abbrechen</button>
+        <button type="button" id="btn-weiter" class="btn">Speichern + nächster</button>
+        <button type="submit" id="btn-speichern" class="btn btn-primary">Speichern</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="dlg-schueler" class="schueler-dlg" aria-labelledby="sch-titel">
+    <div class="sch-kopf">
+      <div>
+        <h2 id="sch-titel"></h2>
+        <p id="sch-unter" class="sch-unter"></p>
+      </div>
+      <button type="button" id="sch-zu" class="btn">Schließen</button>
+    </div>
+    <div id="sch-inhalt"></div>
+  </dialog>
+
+  <dialog id="dlg-bild" class="bild-dlg" aria-label="Tadel-Blatt">
+    <div class="bild-kopf">
+      <strong id="bild-titel">Tadel-Blatt (geschwärzt)</strong>
+      <button type="button" id="bild-zu" class="btn">Schließen</button>
+    </div>
+    <img id="bild-anzeige" alt="Geschwärztes Tadel-Blatt">
+    <div id="bild-fuss" class="bild-fuss"></div>
+  </dialog>
+
+  <dialog id="dlg-schwaerzen" class="schwaerzen-dlg" aria-labelledby="sw-titel">
+    <h2 id="sw-titel">Foto schwärzen</h2>
+    <p id="sw-hinweis" class="sw-hinweis"></p>
+    <p class="hinweis">Ziehe mit dem Finger ein Rechteck über weitere Stellen, die schwarz werden sollen. Mit + vergrößern, mit „✋ Verschieben“ den Ausschnitt bewegen. Gespeichert wird nur dieses geschwärzte Bild.</p>
+    <div class="sw-zoom" role="group" aria-label="Vergrößerung">
+      <button type="button" id="sw-kleiner" class="btn btn-klein" aria-label="Verkleinern">−</button>
+      <span id="sw-stufe" class="sw-stufe">100 %</span>
+      <button type="button" id="sw-groesser" class="btn btn-klein" aria-label="Vergrößern">+</button>
+      <span class="platz"></span>
+      <button type="button" id="sw-modus" class="btn btn-klein" aria-pressed="false">✋ Verschieben</button>
+    </div>
+    <div class="sw-flaeche" id="sw-flaeche"><canvas id="sw-canvas"></canvas></div>
+    <div class="aktionen">
+      <button type="button" id="sw-zurueck" class="btn">↶ Letzte rückgängig</button>
+      <span class="platz"></span>
+      <button type="button" id="sw-abbrechen" class="btn">Abbrechen</button>
+      <button type="button" id="sw-weiter" class="btn btn-primary">Weiter</button>
+    </div>
+  </dialog>
+
+  <dialog id="dlg-foto-wahl" class="wahl-dlg" aria-labelledby="wahl-titel">
+    <h2 id="wahl-titel">Blatt einlesen</h2>
+    <div id="wahl-art-block">
+      <h3 class="wahl-frage">Was?</h3>
+      <div class="wahl-art" role="group" aria-label="Was möchtest du einlesen?">
+        <button type="button" class="chip wahl-art-knopf" data-art="tadel" aria-pressed="true">📄 Tadel-Blatt</button>
+        <button type="button" class="chip wahl-art-knopf" data-art="rueckantwort" aria-pressed="false">📎 Rückantwort</button>
+      </div>
+    </div>
+    <h3 class="wahl-frage">Woher?</h3>
+    <div class="wahl-knoepfe">
+      <button type="button" class="btn wahl-knopf" data-quelle="kamera">📷 <span><strong>Kamera</strong><small>Blatt jetzt fotografieren</small></span></button>
+      <button type="button" class="btn wahl-knopf" data-quelle="mediathek">🖼️ <span><strong>Fotos / Mediathek</strong><small>Ein schon aufgenommenes Foto auswählen</small></span></button>
+      <button type="button" class="btn wahl-knopf" data-quelle="datei">📁 <span><strong>Dateien</strong><small>Bild oder PDF-Scan aus der Dateien-App, iCloud, OneDrive, USB-Stick, Downloads …</small></span></button>
+    </div>
+    <p class="hinweis wahl-tipp">Tipp am PC oder iPad: Ein Bild oder PDF kannst du auch einfach ins Fenster ziehen oder mit Einfügen (Strg+V / ⌘V) übernehmen.</p>
+    <div class="aktionen"><span class="platz"></span><button type="button" id="wahl-abbrechen" class="btn">Abbrechen</button></div>
+  </dialog>
+
+  <dialog id="dlg-zuordnen" class="zuordnen-dlg" aria-labelledby="zu-titel">
+    <h2 id="zu-titel">Rückantwort zuordnen</h2>
+    <p id="zu-erkannt" class="hinweis"></p>
+    <label class="zu-feld">Zu welchem Termin gehört die Rückantwort?
+      <select id="zu-termin"></select>
+    </label>
+    <label class="zu-haken"><input type="checkbox" id="zu-abhaken" checked> Als „unterschrieben“ abhaken</label>
+    <div class="aktionen">
+      <span class="platz"></span>
+      <button type="button" id="zu-abbrechen" class="btn">Abbrechen</button>
+      <button type="button" id="zu-speichern" class="btn btn-primary">Speichern</button>
+    </div>
+  </dialog>
+
+  <dialog id="dlg-klasse" class="klasse-dlg" aria-labelledby="kl-titel">
+    <form id="kl-form" method="dialog" novalidate>
+      <h2 id="kl-titel">Neue Klasse</h2>
+      <div class="felder">
+        <label>Klasse
+          <input id="kl-name" type="text" autocomplete="off" placeholder="z. B. 05c" required>
+        </label>
+        <label>Meine Fächer in dieser Klasse <span class="optional">(mit Komma getrennt)</span>
+          <input id="kl-faecher" type="text" autocomplete="off" placeholder="z. B. Deutsch, Englisch">
+        </label>
+      </div>
+
+      <h3 class="kl-zwischen">Schüler <span class="optional">(eine Zeile pro Schüler; zum Entfernen Zeile löschen oder × tippen)</span></h3>
+      <div class="kl-knoepfe">
+        <button type="button" id="kl-screenshot" class="btn btn-klein">📷 Aus Screenshot lesen</button>
+        <input id="kl-datei" type="file" accept="image/*,application/pdf,.pdf" hidden>
+        <span id="kl-status" class="hinweis" role="status"></span>
+      </div>
+      <div class="kl-reihenfolge" role="radiogroup" aria-label="Reihenfolge der Namen">
+        <span>Namen stehen als</span>
+        <label><input type="radio" name="kl-reihe" value="vn" checked> Vorname Nachname</label>
+        <label><input type="radio" name="kl-reihe" value="nv"> Nachname Vorname</label>
+      </div>
+      <textarea id="kl-namen" rows="8" placeholder="Ein Name pro Zeile, z. B.&#10;Max Mustermann&#10;Lena Beispiel" spellcheck="false" autocomplete="off"></textarea>
+      <p class="hinweis">Screenshot z. B. aus WebUntis (Schülerliste der Klasse) oder Namen hier einfügen. Gespeichert wird nur Vorname + Anfangsbuchstabe des Nachnamens; volle Namen und das Bild werden nicht gespeichert.</p>
+      <div id="kl-vorschau" class="kl-vorschau" aria-live="polite"></div>
+
+      <p id="kl-fehler" class="fehler" role="alert"></p>
+      <div class="aktionen">
+        <button type="button" id="kl-loeschen" class="btn btn-gefahr">Klasse löschen</button>
+        <span class="platz"></span>
+        <button type="button" id="kl-abbrechen" class="btn">Abbrechen</button>
+        <button type="submit" id="kl-speichern" class="btn btn-primary">Speichern</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="dlg-liste" class="liste-dlg" aria-labelledby="li-titel">
+    <form id="li-form" method="dialog" novalidate>
+      <h2 id="li-titel">Neue Liste</h2>
+      <div class="felder">
+        <label>Titel
+          <input id="li-name" type="text" autocomplete="off" placeholder="z. B. Tanzgeld, Schwimmbrille, Wichtelgeschenk" required>
+        </label>
+        <label>Bereich <span class="optional">(z. B. Allgemein, Schwimmen, ein Fach)</span>
+          <input id="li-bereich" type="text" list="li-bereiche" autocomplete="off" placeholder="Allgemein">
+        </label>
+        <datalist id="li-bereiche"></datalist>
+        <label>Frist <span class="optional">(optional, dann erinnert die App)</span>
+          <input id="li-frist" type="date">
+        </label>
+        <label id="li-vorlage-feld">Spalten übernehmen von <span class="optional">(Vorlage)</span>
+          <select id="li-vorlage"></select>
+        </label>
+      </div>
+      <h3 class="kl-zwischen">Spalten</h3>
+      <div id="li-spalten" class="li-spalten"></div>
+      <button type="button" id="li-spalte-neu" class="btn btn-klein">+ Spalte</button>
+      <p class="hinweis">☑ Haken = abgegeben ja/nein · ✎ Text = Notiz · € Geld = Betrag mit Summe (optional mit Soll-Betrag) · 📅 Datum = wann abgegeben.</p>
+      <p id="li-fehler" class="fehler" role="alert"></p>
+      <div class="aktionen">
+        <button type="button" id="li-loeschen" class="btn btn-gefahr">Liste löschen</button>
+        <span class="platz"></span>
+        <button type="button" id="li-abbrechen" class="btn">Abbrechen</button>
+        <button type="submit" class="btn btn-primary">Speichern</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="dlg-import" class="import-dlg" aria-labelledby="im-titel">
+    <form id="im-form" method="dialog" novalidate>
+      <h2 id="im-titel">Einträge übernehmen</h2>
+      <p id="im-info" class="hinweis"></p>
+      <div class="felder im-felder">
+        <label>Quelle
+          <select id="im-quelle">
+            <option value="teachertool">TeacherTool</option>
+            <option value="untis">Untis / WebUntis</option>
+            <option value="andere">Andere</option>
+          </select>
+        </label>
+        <label class="im-haken"><input type="checkbox" id="im-kopf" checked> Erste Zeile ist Überschrift</label>
+      </div>
+      <h3 class="kl-zwischen">Welche Spalte ist was?</h3>
+      <div id="im-zuordnung" class="im-zuordnung"></div>
+      <div class="kl-reihenfolge" role="radiogroup" aria-label="Reihenfolge der Namen">
+        <span>Namen stehen als</span>
+        <label><input type="radio" name="im-reihe" value="vn" checked> Vorname Nachname</label>
+        <label><input type="radio" name="im-reihe" value="nv"> Nachname Vorname</label>
+      </div>
+      <div id="im-lehrer" class="im-zuordnung"></div>
+      <label class="im-fach-fest">Fach für alle Zeilen <span class="optional">(wenn die Datei keine Fach-Spalte hat)</span>
+        <input id="im-fach" type="text" list="im-faecher" autocomplete="off" placeholder="z. B. Deutsch">
+      </label>
+      <datalist id="im-faecher"></datalist>
+      <h3 class="kl-zwischen">Vorschau</h3>
+      <div id="im-vorschau" class="im-vorschau"></div>
+      <p class="hinweis">Gespeichert werden nur Kürzel (Vorname + Initiale), Datum, Stunde, Fach und Text. Die Datei selbst wird nicht gespeichert.</p>
+      <p id="im-fehler" class="fehler" role="alert"></p>
+      <div class="aktionen">
+        <span class="platz"></span>
+        <button type="button" id="im-abbrechen" class="btn">Abbrechen</button>
+        <button type="submit" class="btn btn-primary">Übernehmen</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="dlg-eintrag" class="liste-dlg" aria-labelledby="et-titel">
+    <form id="et-form" method="dialog" novalidate>
+      <h2 id="et-titel">Eintrag hinzufügen</h2>
+      <div class="felder">
+        <label>Schüler
+          <select id="et-schueler"></select>
+        </label>
+        <div class="zeile">
+          <label>Datum
+            <input id="et-datum" type="date" required>
+          </label>
+          <label>Stunde <span class="optional">(optional)</span>
+            <input id="et-stunde" type="text" inputmode="numeric" autocomplete="off" placeholder="z. B. 3">
+          </label>
+        </div>
+        <label>Fach
+          <input id="et-fach" type="text" list="im-faecher" autocomplete="off" placeholder="z. B. Deutsch">
+        </label>
+        <label>Eintrag
+          <textarea id="et-text" rows="3" placeholder="z. B. Hausaufgaben fehlen"></textarea>
+        </label>
+      </div>
+      <p id="et-fehler" class="fehler" role="alert"></p>
+      <div class="aktionen">
+        <span class="platz"></span>
+        <button type="button" id="et-abbrechen" class="btn">Abbrechen</button>
+        <button type="submit" class="btn btn-primary">Speichern</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="dlg-tt" class="import-dlg" aria-labelledby="tt-titel">
+    <form id="tt-form" method="dialog" novalidate>
+      <h2 id="tt-titel">Schülerseite übernehmen</h2>
+      <p id="tt-info" class="hinweis"></p>
+      <div class="felder">
+        <label>Schüler
+          <select id="tt-schueler"></select>
+        </label>
+      </div>
+      <div id="tt-bilder"></div>
+      <p class="hinweis">Noten werden als „Note 3 – Kommentar“ übernommen. Bitte prüfen: Die Texterkennung kann Noten oder Wörter falsch lesen; Texte lassen sich hier korrigieren, Haken weg = nicht übernehmen.</p>
+      <p id="tt-fehler" class="fehler" role="alert"></p>
+      <div class="aktionen">
+        <span class="platz"></span>
+        <button type="button" id="tt-abbrechen" class="btn">Abbrechen</button>
+        <button type="submit" class="btn btn-primary">Übernehmen</button>
+      </div>
+    </form>
+  </dialog>
+
+  <input id="sa-datei" type="file" accept=".csv,text/csv,text/plain,application/pdf,.pdf,image/*" multiple hidden>
+
+  <dialog id="dlg-eingabe" class="frage-dlg" aria-labelledby="ein-text">
+    <form id="ein-form" method="dialog" novalidate>
+      <p id="ein-text" class="frage-text"></p>
+      <input id="ein-feld" class="ein-feld" type="text" autocomplete="off">
+      <div class="aktionen">
+        <button type="button" id="ein-leeren" class="btn btn-gefahr">Leeren</button>
+        <span class="platz"></span>
+        <button type="button" id="ein-nein" class="btn">Abbrechen</button>
+        <button type="submit" class="btn btn-primary">OK</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="dlg-frage" class="frage-dlg" aria-labelledby="frage-text">
+    <p id="frage-text" class="frage-text"></p>
+    <div class="aktionen">
+      <span class="platz"></span>
+      <button type="button" id="frage-nein" class="btn">Abbrechen</button>
+      <button type="button" id="frage-ja" class="btn btn-primary">OK</button>
+    </div>
+  </dialog>
+
+  <datalist id="raeume"></datalist>
+  <datalist id="klassen"></datalist>
+
+  <script src="app.js"></script>
+  <script src="wolke.js"></script>
+  <script src="foto.js"></script>
+  <script src="sicherung.js"></script>
+  <script src="klassen.js"></script>
+  <script src="listen.js"></script>
+  <script src="sammlung.js"></script>
